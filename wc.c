@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <getopt.h>
 #include <stdbool.h>
 
 // A simple reimplementation of wc (word count):
@@ -97,35 +98,33 @@ int main(int argc, char* argv[]){
 /////////////////////////////////////////////
 
 void readArgs(int argc, char* argv[]){
-	for(int i = 1; i < argc; ++i){
-		switch(argv[i][0]){
-			case '-':
-				// long-line arguments (--):
-				if(argv[i][1] == '-'){
-					if(str_equals(&argv[i][2], "bytes"))
-						ARG_BYTES = true;
-					if(str_equals(&argv[i][2], "words"))
-						ARG_WORDS= true;
-					if(str_equals(&argv[i][2], "chars"))
-						ARG_CHARS = true;
-					if(str_equals(&argv[i][2], "lines"))
-						ARG_LINES = true;
-					if(str_equals(&argv[i][2], "max-line-length"))
-						ARG_MAX_LINE_LENGTH = true;
-				}
-				// default: (-)
-				if(str_equals(&argv[i][1], "c"))
-					ARG_BYTES = true;
-				if(str_equals(&argv[i][1], "w"))
-					ARG_WORDS= true;
-				if(str_equals(&argv[i][1], "m"))
-					ARG_CHARS = true;
-				if(str_equals(&argv[i][1], "l"))
-					ARG_LINES = true;
-				if(str_equals(&argv[i][1], "L"))
-					ARG_MAX_LINE_LENGTH = true;
+	static struct option long_options[] = {
+		{"bytes", no_argument, 0, 'c'},
+		{"words", no_argument, 0, 'w'},
+		{"chars", no_argument, 0, 'm'},
+		{"lines", no_argument, 0, 'l'},
+		{"max-line-length", no_argument, 0, 'L'}
+	};
+
+	int opt;
+	while((opt = getopt_long(argc, argv, "cwmlL", long_options, NULL)) != -1){
+		switch(opt){
+			case 'c':
+				ARG_BYTES = true;
 				break;
-			default:
+			case 'w':
+				ARG_WORDS= true;
+				break;
+			case 'm':
+				ARG_CHARS = true;
+				break;
+			case 'l':
+				ARG_LINES = true;
+				break;
+			case 'L':
+				ARG_MAX_LINE_LENGTH = true;
+				break;
+			case '?':
 				break;
 		}
 	}
